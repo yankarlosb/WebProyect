@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Balance de Carga Docente</title>
+    <link rel="stylesheet" href="principal-es.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            <h1>📊 CiberBalance</h1>
+            <p>Facultad de Ciberseguridad</p>
+        </div>
+        
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <div class="user-menu">
+            <div class="user-info">
+                <div class="user-name" id="currentUser">Coordinador Académico</div>
+                <div class="user-role">Jefe de Colectivo de Carrera</div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="nav-item active" onclick="navigate('dashboard')">
+                <i>📊</i> <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="navigate('balance')">
+                <i>📋</i> <span>Balance de Carga</span>
+            </div>
+            <div class="nav-item" onclick="navigate('asignaturas')">
+                <i>📚</i> <span>Gestión de Asignaturas</span>
+            </div>
+            <div class="nav-item" onclick="navigate('reportes')">
+                <i>📈</i> <span>Reportes</span>
+            </div>
+            <div class="nav-item" onclick="navigate('configuracion')">
+                <i>⚙️</i> <span>Configuración</span>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2>👋 ¡Bienvenido, <span id="userGreeting">Coordinador</span>!</h2>
+                <p>Sistema de Balance de Carga Docente - Ingeniería en Ciberseguridad</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🎓</div>
+                    <h3>4</h3>
+                    <p>Años Académicos</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <h3>24</h3>
+                    <p>Asignaturas Activas</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <h3>15</h3>
+                    <p>Semanas por Semestre</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔄</div>
+                    <h3>2</h3>
+                    <p>Períodos Académicos</p>
+                </div>
+            </div>
+
+            <h3 class="section-title">Acciones Rápidas</h3>
+            <div class="quick-actions">
+                <div class="action-btn" onclick="navigate('balance')">
+                    <div class="action-icon">➕</div>
+                    <div class="action-text">Nuevo Balance</div>
+                </div>
+                <div class="action-btn" onclick="navigate('asignaturas')">
+                    <div class="action-icon">📚</div>
+                    <div class="action-text">Gestionar Asignaturas</div>
+                </div>
+                <div class="action-btn" onclick="navigate('importar')">
+                    <div class="action-icon">📥</div>
+                    <div class="action-text">Importar Datos</div>
+                </div>
+                <div class="action-btn" onclick="navigate('exportar')">
+                    <div class="action-icon">📤</div>
+                    <div class="action-text">Exportar Reportes</div>
+                </div>
+            </div>
+
+            <!-- BALANCES RECIENTES -->
+            <div class="recent-section">
+                <h3 class="section-title">Balances Recientes</h3>
+                <div class="recent-table-container">
+                    <table class="recent-table">
+                        <thead>
+                            <tr>
+                                <th>Año</th>
+                                <th>Período</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1ro.ICS</td>
+                                <td>1ero - 2025/2026</td>
+                                <td>15/01/2025</td>
+                                <td class="action-buttons">
+                                    <button class="btn-edit" onclick="navigate('balance')">Editar</button>
+                                    <button class="btn-export">Exportar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2do.ICS</td>
+                                <td>1ero - 2025/2026</td>
+                                <td>10/01/2025</td>
+                                <td class="action-buttons">
+                                    <button class="btn-edit" onclick="navigate('balance')">Editar</button>
+                                    <button class="btn-export">Exportar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3ro.ICS</td>
+                                <td>1ero - 2024/2025</td>
+                                <td>05/01/2024</td>
+                                <td class="action-buttons">
+                                    <button class="btn-edit" onclick="navigate('balance')">Editar</button>
+                                    <button class="btn-export">Exportar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticación (comentado temporalmente)
+        /* if (!localStorage.getItem('loggedIn')) {
+            window.location.href = 'login.html';
+        } */
+
+        // Cargar información del usuario
+        document.getElementById('currentUser').textContent = localStorage.getItem('username') || 'Coordinador Académico';
+        document.getElementById('userGreeting').textContent = localStorage.getItem('username') || 'Coordinador';
+
+        // Función para navegar entre páginas
+        function navigate(page) {
+            if (page === 'balance') {
+                window.location.href = 'balance-form.html';
+            } else {
+                // Para otras páginas, mostrar mensaje temporal
+                const messages = {
+                    'dashboard': 'Ya estás en el Dashboard',
+                    'asignaturas': 'Navegando a Gestión de Asignaturas',
+                    'reportes': 'Navegando a Reportes',
+                    'configuracion': 'Navegando a Configuración',
+                    'importar': 'Navegando a Importar Datos',
+                    'exportar': 'Navegando a Exportar Reportes'
+                };
+                
+                if (messages[page]) {
+                    showNotification(messages[page]);
+                }
+            }
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message) {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            // Añadir al cuerpo
+            document.body.appendChild(notification);
+            
+            // Mostrar con animación
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Ocultar después de 3 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Función para cerrar sesión
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+
+        // Función para alternar sidebar en móviles
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Cerrar sidebar al hacer clic fuera de él en móviles
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !mobileMenuBtn.contains(event.target) &&
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Añadir efecto de carga inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('loaded');
+            
+            // Animar elementos de estadísticas con retardo
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Animar botones de acción con retardo
+            const actionBtns = document.querySelectorAll('.action-btn');
+            actionBtns.forEach((btn, index) => {
+                btn.style.animationDelay = `${0.4 + (index * 0.1)}s`;
+            });
+        });
+
+        // Manejar redimensionamiento de ventana
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
