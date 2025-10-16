@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance de Carga - Formulario</title>
+    <link rel="stylesheet" href="/frontend/balance.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            <h1>📊 CiberBalance</h1>
+        </div>
+        
+        <div class="nav-breadcrumb">
+            <a href="dashboard.html">Dashboard</a> > <span>Balance de Carga - 1ro.ICS</span>
+        </div>
+        
+        <div class="user-menu">
+            <button class="btn-secondary" onclick="window.location.href='dashboard.html'">← Volver</button>
+            <div style="font-size: 12px; color: #7f8c8d;">|</div>
+            <span style="font-size: 12px; color: #7f8c8d;">Usuario: <strong id="currentUser">Coordinador</strong></span>
+        </div>
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+        <div class="control-group">
+            <label>Año Académico</label>
+            <select id="year-select">
+                <option value="1ro">1ro.ICS</option>
+                <option value="2do">2do.ICS</option>
+                <option value="3ro">3ro.ICS</option>
+                <option value="4to">4to.ICS</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>Período</label>
+            <select id="period-select">
+                <option value="1ero">1ero</option>
+                <option value="2do">2do</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>Año Lectivo</label>
+            <input type="text" id="academic-year" value="2025-2026">
+        </div>
+        
+        <div class="control-group">
+            <label>Fecha Inicio</label>
+            <input type="date" id="start-date" value="2025-09-08">
+        </div>
+        
+        <button class="btn-primary" onclick="generateDates()">Generar Fechas</button>
+        <button class="btn-success" onclick="calculateAll()">Calcular Totales</button>
+    </div>
+
+    <!-- MAIN TABLE -->
+    <div class="table-container">
+        <div class="institutional-header">
+            <div class="faculty-name">FACULTAD DE CIBERSEGURIDAD</div>
+            <div class="document-title">Balance de Carga Docente</div>
+            <div class="academic-info">
+                Carrera Ingeniería en Ciberseguridad | Curso: <span id="header-year">2025-2026</span> | Período: <span id="header-period">1ero</span>
+            </div>
+        </div>
+
+        <div class="scroll-container">
+            <table id="main-table" class="balance-table">
+                <thead>
+                    <tr class="weeks-row">
+                        <th rowspan="3" class="subject-header">Asignaturas</th>
+                        <!-- Semanas 1-15 -->
+                        <th colspan="4">Semana 1</th>
+                        <th colspan="4">Semana 2</th>
+                        <th colspan="4">Semana 3</th>
+                        <th colspan="4">Semana 4</th>
+                        <th colspan="4">Semana 5</th>
+                        <th colspan="4">Semana 6</th>
+                        <th colspan="4">Semana 7</th>
+                        <th colspan="4">Semana 8</th>
+                        <th colspan="4">Semana 9</th>
+                        <th colspan="4">Semana 10</th>
+                        <th colspan="4">Semana 11</th>
+                        <th colspan="4">Semana 12</th>
+                        <th colspan="4">Semana 13</th>
+                        <th colspan="4">Semana 14</th>
+                        <th colspan="4">Semana 15</th>
+                        <!-- Semanas especiales -->
+                        <th colspan="4">SEMANA DE CONSULTAS</th>
+                        <th colspan="5">EXÁMENES FINALES</th>
+                        <th colspan="5">EXÁMENES EXTRA I</th>
+                        <th colspan="5">EXÁMENES EXTRA II</th>
+                    </tr>
+                    
+                    <tr class="dates-row">
+                        <!-- Las fechas se generarán dinámicamente -->
+                    </tr>
+                    
+                    <tr class="days-row">
+                        <!-- Días 1-4 para cada semana normal -->
+                        <!-- Se generarán dinámicamente -->
+                    </tr>
+                </thead>
+                
+                <tbody id="subjects-body">
+                    <!-- Las asignaturas se cargarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CALCULATIONS TABLE -->
+    <div class="calculations-section">
+        <table id="calculations-table" class="calculations-table">
+            <thead>
+                <tr>
+                    <th>Asignaturas</th>
+                    <th>Total</th>
+                    <th>C</th>
+                    <th>CP</th>
+                    <th>S</th>
+                    <th>PL</th>
+                    <th>TE</th>
+                    <th>T</th>
+                    <th>PP</th>
+                    <th>Coef.</th>
+                </tr>
+            </thead>
+            <tbody id="calculations-body">
+                <!-- Los cálculos se generarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ACTIONS PANEL -->
+    <div class="actions-panel">
+        <button class="btn-success" onclick="addSubject()">+ Agregar Asignatura</button>
+        <button class="btn-warning" onclick="removeSubject()">- Eliminar Asignatura</button>
+        <button class="btn-primary" onclick="calculateAll()">🔄 Calcular Todo</button>
+        <button class="btn-danger" onclick="resetAll()">🗑️ Reiniciar</button>
+        <button class="btn-success" onclick="exportToExcel()">📊 Exportar a Excel</button>
+        <button class="btn-primary" onclick="saveProgress()">💾 Guardar Progreso</button>
+    </div>
+
+    <script src="balance-script.js"></script>
+    <script>
+        // Verificar autenticación
+        // const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+        // const jwtCookie = cookies.find(cookie => cookie.startsWith('jwt_token='));
+        // if (!jwtCookie) {
+        //     alert('Por favor, inicie sesión para acceder a esta página.');
+        // }
+
+        // Cargar usuario actual
+        document.getElementById('currentUser').textContent = localStorage.getItem('username') || 'Coordinador';
+
+        // Inicializar la aplicación cuando se cargue la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBalanceForm();
+        });
+    </script>
+</body>
+</html>

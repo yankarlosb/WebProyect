@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Balance de Carga Docente</title>
+    <link rel="stylesheet" href="/frontend/login-es.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>🔐 CiberBalance</h1>
+            <p>Facultad de Ciberseguridad</p>
+        </div>
+        
+        <form id="loginForm" method="post" action="/login">
+            <div class="form-group">
+                <label for="username">Usuario:</label>
+                <input type="text" id="username" name="email" placeholder="Ingrese su usuario" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+            </div>
+            
+            <button type="submit" class="btn-login">Iniciar Sesión</button>
+        </form>
+        
+        <div class="footer">
+            <p>Sistema de Balance de Carga Docente v1.0</p>
+        </div>
+    </div>
+</body>
+</html>

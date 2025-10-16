@@ -1,0 +1,14 @@
+[package]
+name = "WebProyect"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rocket = { version = "0.5.1", features = ["json"] }
+sea-orm = { version = "1.1.17", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+dotenvy = "0.15"
+bcrypt = "0.17"
+jsonwebtoken = "9.3"
+chrono = { version = "0.4", features = ["serde"] }

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test JWT - Login API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.secondary {
+            background-color: #28a745;
+        }
+        button.secondary:hover {
+            background-color: #1e7e34;
+        }
+        button.danger {
+            background-color: #dc3545;
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        .response.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .token-display {
+            word-break: break-all;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test de Autenticación JWT</h1>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="usuario@ejemplo.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" placeholder="Tu contraseña">
+        </div>
+        
+        <button onclick="login()">Iniciar Sesión</button>
+        
+        <div class="button-group">
+            <button class="secondary" onclick="testProtectedRoute()">Ruta Protegida</button>
+            <button class="secondary" onclick="testGetMe()">Mi Info</button>
+            <button class="danger" onclick="testAdminRoute()">Ruta Admin</button>
+            <button class="danger" onclick="testAdminDashboard()">Dashboard Admin</button>
+        </div>
+        
+        <button onclick="clearToken()" style="background-color: #6c757d; margin-top: 10px;">Cerrar Sesión (Limpiar Token)</button>
+        
+        <div id="response"></div>
+    </div>
+
+    <script>
+        let jwtToken = null;
+
+        // Función para mostrar respuestas
+        function displayResponse(data, isError = false) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.className = 'response ' + (isError ? 'error' : 'success');
+            
+            let html = '<h3>' + (isError ? '❌ Error' : '✅ Éxito') + '</h3>';
+            html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            
+            if (data.token) {
+                html += '<div class="token-display"><strong>Token JWT:</strong><br>' + data.token + '</div>';
+            }
+            
+            responseDiv.innerHTML = html;
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.success && data.token) {
+                    jwtToken = data.token;
+                    localStorage.setItem('jwt_token', jwtToken);
+                    displayResponse(data, false);
+                } else {
+                    displayResponse(data, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        }
+
+        // Test de ruta protegida
+        async function testProtectedRoute() {
+            if (!jwtToken) {
+                jwtToken = localStorage.getItem('jwt_token');
+            }
+
+            if (!jwtToken) {
+                alert('Primero debes iniciar sesión');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/protected', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + jwtToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResponse(data, false);
+                } else {
+                    displayResponse({ error: 'No autorizado', status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        }
+
+        // Obtener información del usuario actual
+        async function testGetMe() {
+            if (!jwtToken) {
+                jwtToken = localStorage.getItem('jwt_token');
+            }
+
+            if (!jwtToken) {
+                alert('Primero debes iniciar sesión');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + jwtToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResponse(data, false);
+                } else {
+                    displayResponse({ error: 'No autorizado', status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        }
+
+        // Test de ruta de administrador
+        async function testAdminRoute() {
+            if (!jwtToken) {
+                jwtToken = localStorage.getItem('jwt_token');
+            }
+
+            if (!jwtToken) {
+                alert('Primero debes iniciar sesión');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + jwtToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResponse(data, false);
+                } else if (response.status === 403) {
+                    displayResponse({ error: 'Prohibido - Se requieren permisos de administrador', status: 403 }, true);
+                } else {
+                    displayResponse({ error: 'No autorizado', status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        }
+
+        // Test del dashboard de administrador
+        async function testAdminDashboard() {
+            if (!jwtToken) {
+                jwtToken = localStorage.getItem('jwt_token');
+            }
+
+            if (!jwtToken) {
+                alert('Primero debes iniciar sesión');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/dashboard', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + jwtToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResponse(data, false);
+                } else if (response.status === 403) {
+                    displayResponse({ error: 'Prohibido - Se requieren permisos de administrador', status: 403 }, true);
+                } else {
+                    displayResponse({ error: 'No autorizado', status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        }
+
+        // Limpiar token
+        function clearToken() {
+            jwtToken = null;
+            localStorage.removeItem('jwt_token');
+            document.getElementById('response').innerHTML = '<div class="response">Token eliminado. Has cerrado sesión.</div>';
+        }
+
+        // Cargar token al iniciar si existe
+        window.onload = function() {
+            const savedToken = localStorage.getItem('jwt_token');
+            if (savedToken) {
+                jwtToken = savedToken;
+                displayResponse({ message: 'Token JWT cargado desde localStorage' }, false);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Balance de Carga Docente</title>
+    <link rel="stylesheet" href="principal-es.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            <h1>📊 CiberBalance</h1>
+            <p>Facultad de Ciberseguridad</p>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-info">
+                <div class="user-name" id="currentUser">Coordinador Académico</div>
+                <div class="user-role">Jefe de Colectivo de Carrera</div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="nav-item active" onclick="navigate('dashboard')">
+                <i>📊</i> Dashboard
+            </div>
+            <div class="nav-item" onclick="navigate('balance')">
+                <i>📋</i> Balance de Carga
+            </div>
+            <div class="nav-item" onclick="navigate('asignaturas')">
+                <i>📚</i> Gestión de Asignaturas
+            </div>
+            <div class="nav-item" onclick="navigate('reportes')">
+                <i>📈</i> Reportes
+            </div>
+            <div class="nav-item" onclick="navigate('configuracion')">
+                <i>⚙️</i> Configuración
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2>👋 ¡Bienvenido, <span id="userGreeting">Coordinador</span>!</h2>
+                <p>Sistema de Balance de Carga Docente - Ingeniería en Ciberseguridad</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>4</h3>
+                    <p>Años Académicos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>24</h3>
+                    <p>Asignaturas Activas</p>
+                </div>
+                <div class="stat-card">
+                    <h3>15</h3>
+                    <p>Semanas por Semestre</p>
+                </div>
+                <div class="stat-card">
+                    <h3>2</h3>
+                    <p>Períodos Académicos</p>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; color: var(--primary);">Acciones Rápidas</h3>
+            <div class="quick-actions">
+                <div class="action-btn" onclick="navigate('balance')">
+                    <i>➕</i>
+                    <div>Nuevo Balance</div>
+                </div>
+                <div class="action-btn" onclick="navigate('asignaturas')">
+                    <i>📚</i>
+                    <div>Gestionar Asignaturas</div>
+                </div>
+                <div class="action-btn" onclick="navigate('importar')">
+                    <i>📥</i>
+                    <div>Importar Datos</div>
+                </div>
+                <div class="action-btn" onclick="navigate('exportar')">
+                    <i>📤</i>
+                    <div>Exportar Reportes</div>
+                </div>
+            </div>
+
+            <!-- BALANCES RECIENTES -->
+            <div style="margin-top: 40px;">
+                <h3 style="margin-bottom: 15px; color: var(--primary);">Balances Recientes</h3>
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--light);">
+                                <th style="padding: 12px; text-align: left;">Año</th>
+                                <th style="padding: 12px; text-align: left;">Período</th>
+                                <th style="padding: 12px; text-align: left;">Fecha</th>
+                                <th style="padding: 12px; text-align: left;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">1ro.ICS</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">1ero - 2025/2026</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">15/01/2025</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">
+                                    <button style="padding: 5px 10px; background: var(--accent); color: white; border: none; border-radius: 3px; margin-right: 5px; cursor: pointer;" onclick="navigate('balance')">Editar</button>
+                                    <button style="padding: 5px 10px; background: var(--success); color: white; border: none; border-radius: 3px; cursor: pointer;">Exportar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">2do.ICS</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">1ero - 2025/2026</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">10/01/2025</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">
+                                    <button style="padding: 5px 10px; background: var(--accent); color: white; border: none; border-radius: 3px; margin-right: 5px; cursor: pointer;" onclick="navigate('balance')">Editar</button>
+                                    <button style="padding: 5px 10px; background: var(--success); color: white; border: none; border-radius: 3px; cursor: pointer;">Exportar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticación
+       /* if (!localStorage.getItem('loggedIn')) {
+            window.location.href = 'login.html';
+        }*/
+
+        // Cargar información del usuario
+        document.getElementById('currentUser').textContent = localStorage.getItem('username') || 'Coordinador Académico';
+        document.getElementById('userGreeting').textContent = localStorage.getItem('username') || 'Coordinador';
+
+        function navigate(page) {
+            if (page === 'balance') {
+                window.location.href = 'balance-form.html';
+            } else {
+                alert(`Navegando a: ${page}`);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

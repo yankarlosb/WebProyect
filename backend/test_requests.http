@@ -1,0 +1,133 @@
+# Colección de Pruebas JWT - HTTP Requests
+# Usar con REST Client extension de VS Code o similar
+
+### Variables
+@baseUrl = http://localhost:8000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...  # Reemplazar con tu token
+
+### ==============================================
+### RUTAS PÚBLICAS
+### ==============================================
+
+### 1. GET - Página de login (HTML)
+GET {{baseUrl}}/login
+Accept: text/html
+
+### ==============================================
+### AUTENTICACIÓN
+### ==============================================
+
+### 2. POST - Login (JSON) - Obtener token JWT
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "email": "usuario@ejemplo.com",
+  "password": "contraseña123"
+}
+
+### 3. POST - Login (Formulario) - Redirección
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+email=usuario@ejemplo.com&password=contraseña123
+
+### ==============================================
+### RUTAS PROTEGIDAS (Requieren Authentication)
+### ==============================================
+
+### 4. GET - Ruta protegida
+GET {{baseUrl}}/api/protected
+Authorization: Bearer {{token}}
+
+### 5. GET - Información del usuario actual
+GET {{baseUrl}}/api/me
+Authorization: Bearer {{token}}
+
+### ==============================================
+### RUTAS DE ADMINISTRADOR (Requieren Admin Role)
+### ==============================================
+
+### 6. GET - Ruta de administrador
+GET {{baseUrl}}/api/admin
+Authorization: Bearer {{token}}
+
+### 7. GET - Dashboard de administrador
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{token}}
+
+### ==============================================
+### PRUEBAS DE ERROR
+### ==============================================
+
+### 8. GET - Ruta protegida sin token (401)
+GET {{baseUrl}}/api/protected
+
+### 9. GET - Ruta protegida con token inválido (401)
+GET {{baseUrl}}/api/protected
+Authorization: Bearer token_invalido_123
+
+### 10. GET - Ruta admin con usuario normal (403)
+GET {{baseUrl}}/api/admin
+Authorization: Bearer {{token}}
+
+### ==============================================
+### PRUEBAS CON cURL
+### ==============================================
+
+# Para copiar y pegar en la terminal:
+
+# 1. Login
+# curl -X POST http://localhost:8000/api/login \
+#   -H "Content-Type: application/json" \
+#   -d '{"email":"usuario@ejemplo.com","password":"contraseña123"}'
+
+# 2. Ruta protegida
+# curl http://localhost:8000/api/protected \
+#   -H "Authorization: Bearer TU_TOKEN_AQUI"
+
+# 3. Ruta admin
+# curl http://localhost:8000/api/admin \
+#   -H "Authorization: Bearer TU_TOKEN_AQUI"
+
+### ==============================================
+### PRUEBAS CON PowerShell (Windows)
+### ==============================================
+
+# 1. Login
+# $body = @{
+#     email = "usuario@ejemplo.com"
+#     password = "contraseña123"
+# } | ConvertTo-Json
+# 
+# $response = Invoke-RestMethod -Uri "http://localhost:8000/api/login" `
+#     -Method Post `
+#     -ContentType "application/json" `
+#     -Body $body
+# 
+# $token = $response.token
+# Write-Host "Token: $token"
+
+# 2. Ruta protegida
+# $headers = @{
+#     Authorization = "Bearer $token"
+# }
+# 
+# Invoke-RestMethod -Uri "http://localhost:8000/api/protected" `
+#     -Headers $headers
+
+# 3. Ruta admin
+# Invoke-RestMethod -Uri "http://localhost:8000/api/admin" `
+#     -Headers $headers
+
+### ==============================================
+### NOTAS
+### ==============================================
+
+# - Reemplaza {{token}} con el token JWT real obtenido del login
+# - Los tokens expiran en 24 horas por defecto
+# - Status codes esperados:
+#   * 200: Éxito
+#   * 401: No autorizado (sin token o token inválido)
+#   * 403: Prohibido (sin permisos suficientes)
+#   * 500: Error del servidor
